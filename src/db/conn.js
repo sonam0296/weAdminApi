@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect("mongodb://localhost:27017/nodepractice", {
+mongoose.connect("mongodb://localhost:27017/MERNPractical", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true

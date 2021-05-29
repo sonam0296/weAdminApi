@@ -4,12 +4,14 @@ const path = require('path');
 const User = require('../src/models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cors = require('cors')
 
 const JWT_SECRET = 'adbjsbjdbsjbjab@!BHJBHBhB!#$$%bdvvjhbdhbvhj2434jbsjkkjbjk'
 require('./db/conn');
 
 const app = express();
 
+app.use(cors())
 
 app.use('/', express.static(path.join(__dirname, '../static')));
 
@@ -62,25 +64,26 @@ app.post('/api/change-password', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
 
-    const { username, password } = req.body
+    const { email, password } = req.body
 
-    const user = await User.findOne({ username }).lean()
+    const user = await User.findOne({ email }).lean()
 
     if (!user) {
-        return res.json({ status: 'error', error: 'Invalid Username/Password' })
+        return res.json({ status: 'error', error: 'Invalid email/Password' })
     }
 
     if (await bcrypt.compare(password, user.password)) {
 
         const token = jwt.sign({
             id: user._id,
-            username: user.username
+            email: user.email
         }, JWT_SECRET)
-        //username and password combination is successful
+        //email and password combination is successful
         return res.json({ status: 'ok', data: token })
     }
-
-    return res.json({ status: 'error', error: 'Invalid Username/Password' })
+    else{
+    return res.json({ status: 'error', error: 'Invalid email/Password' })
+}
 
 })
 
@@ -89,12 +92,19 @@ app.post('/api/register', async (req, res) => {
 
     // Hashing password using bcryptjs
 
-    const { username, password: plainTextPassword } = req.body
+    const { name, phone, email, password: plainTextPassword } = req.body
 
-    if (!username || typeof username !== 'string') {
+    // if (!name || typeof name !== 'string') {
+    //     return res.json({
+    //         status: 'error',
+    //         error: 'Invalid Name'
+    //     })
+    // }
+
+    if (!email || typeof email !== 'string') {
         return res.json({
             status: 'error',
-            error: 'Invalid Username'
+            error: 'Invalid Email'
         })
     }
 
@@ -117,14 +127,14 @@ app.post('/api/register', async (req, res) => {
 
     try {
         const response = await User.create({
-            username,
+            email,
             password
         })
         console.log('User created successfully:', response);
     } catch (error) {
         if (error.code === 11000) {
             // duplicate key
-            return res.json({ status: 'error', error: 'Username already in use.' })
+            return res.json({ status: 'error', error: 'Email already in use.' })
         }
         throw error
     }

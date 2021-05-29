@@ -5,16 +5,24 @@ const ContactSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    email:{
+    brand:{
         type: String,
         required: true
         // unique:true
     },
-    mobile:{
+    quantity:{
+        type: Number,
+        required: true
+    },
+    size:{
         type: String,
         required: true
     },
-    message:{
+    price:{
+        type: Number,
+        required: true
+    },
+    description:{
         type: String,
         // required: true
     }
